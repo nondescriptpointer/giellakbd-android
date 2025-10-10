@@ -2,7 +2,7 @@
 buildscript {
     ext {
         kotlinVersion = '2.1.20'
-        sentryVersion = '8.21.1'
+        sentryVersion = '8.23.0'
         constraintLayoutVersion = '2.3.0'
         legacySupportVersion = '1.0.0'
         rxJavaVersion = '2.2.11'
