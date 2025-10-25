@@ -446,42 +446,58 @@ public class KeyboardView extends View {
         // Draw hint label.
         final String hintLabel = key.getHintLabel();
         if (hintLabel != null) {
-            paint.setTextSize(key.selectHintTextSize(params));
-            paint.setColor(key.selectHintTextColor(params));
-            // TODO: Should add a way to specify type face for hint letters
-            paint.setTypeface(Typeface.DEFAULT_BOLD);
-            blendAlpha(paint, params.mAnimAlpha);
-            final float labelCharHeight = TypefaceUtils.getReferenceCharHeight(paint);
-            final float labelCharWidth = TypefaceUtils.getReferenceCharWidth(paint);
-            final float hintX, hintBaseline;
-            if (key.hasHintLabel()) {
-                // The hint label is placed just right of the key label. Used mainly on
-                // "phone number" layout.
-                hintX = labelX + params.mHintLabelOffCenterRatio * labelCharWidth;
-                if (key.isAlignHintLabelToBottom(mDefaultKeyLabelFlags)) {
-                    hintBaseline = labelBaseline;
-                } else {
-                    hintBaseline = centerY + labelCharHeight / 2.0f;
+            // Check if this is a more keys indicator (hint letter in top-right corner)
+            if (key.hasHintLetter() && !key.hasHintLabel() && !key.hasShiftedLetterHint()) {
+                // Draw SVG circle indicator instead of text for more keys
+                final Drawable indicatorDrawable = getContext().getDrawable(R.drawable.more_keys_indicator);
+                if (indicatorDrawable != null) {
+                    final int indicatorSize = (int) (key.selectHintTextSize(params) * 0.8f); // Scale relative to hint text size
+                    final int indicatorX = (int) (keyWidth - mKeyHintLetterPadding - indicatorSize / 2.0f);
+                    final int indicatorY = (int) (mKeyHintLetterPadding);
+                    
+                    indicatorDrawable.setBounds(indicatorX, indicatorY, indicatorX + indicatorSize, indicatorY + indicatorSize);
+                    indicatorDrawable.setAlpha((int) (params.mAnimAlpha * 255));
+                    indicatorDrawable.draw(canvas);
                 }
-                paint.setTextAlign(Align.LEFT);
-            } else if (key.hasShiftedLetterHint()) {
-                // The hint label is placed at top-right corner of the key. Used mainly on tablet.
-                hintX = keyWidth - mKeyShiftedLetterHintPadding - labelCharWidth / 2.0f;
-                paint.getFontMetrics(mFontMetrics);
-                hintBaseline = -mFontMetrics.top;
-                paint.setTextAlign(Align.CENTER);
-            } else { // key.hasHintLetter()
-                // The hint letter is placed at top-right corner of the key. Used mainly on phone.
-                final float hintDigitWidth = TypefaceUtils.getReferenceDigitWidth(paint);
-                final float hintLabelWidth = TypefaceUtils.getStringWidth(hintLabel, paint);
-                hintX = keyWidth - mKeyHintLetterPadding
-                        - Math.max(hintDigitWidth, hintLabelWidth) / 2.0f;
-                hintBaseline = -paint.ascent();
-                paint.setTextAlign(Align.CENTER);
+            } else {
+                // Draw text hint label for other cases (hint label, shifted letter hint)
+                paint.setTextSize(key.selectHintTextSize(params));
+                paint.setColor(key.selectHintTextColor(params));
+                // TODO: Should add a way to specify type face for hint letters
+                paint.setTypeface(Typeface.DEFAULT_BOLD);
+                blendAlpha(paint, params.mAnimAlpha);
+                final float labelCharHeight = TypefaceUtils.getReferenceCharHeight(paint);
+                final float labelCharWidth = TypefaceUtils.getReferenceCharWidth(paint);
+                final float hintX, hintBaseline;
+                if (key.hasHintLabel()) {
+                    // The hint label is placed just right of the key label. Used mainly on
+                    // "phone number" layout.
+                    hintX = labelX + params.mHintLabelOffCenterRatio * labelCharWidth;
+                    if (key.isAlignHintLabelToBottom(mDefaultKeyLabelFlags)) {
+                        hintBaseline = labelBaseline;
+                    } else {
+                        hintBaseline = centerY + labelCharHeight / 2.0f;
+                    }
+                    paint.setTextAlign(Align.LEFT);
+                } else if (key.hasShiftedLetterHint()) {
+                    // The hint label is placed at top-right corner of the key. Used mainly on tablet.
+                    hintX = keyWidth - mKeyShiftedLetterHintPadding - labelCharWidth / 2.0f;
+                    paint.getFontMetrics(mFontMetrics);
+                    hintBaseline = -mFontMetrics.top;
+                    paint.setTextAlign(Align.CENTER);
+                } else { // key.hasHintLetter()
+                    // The hint letter is placed at top-right corner of the key. Used mainly on phone.
+                    final float hintDigitWidth = TypefaceUtils.getReferenceDigitWidth(paint);
+                    final float hintLabelWidth = TypefaceUtils.getStringWidth(hintLabel, paint);
+                    hintX = keyWidth - mKeyHintLetterPadding
+                            - Math.max(hintDigitWidth, hintLabelWidth) / 2.0f;
+                    hintBaseline = -paint.ascent();
+                    paint.setTextAlign(Align.CENTER);
+                }
+                final float adjustmentY = params.mHintLabelVerticalAdjustment * labelCharHeight;
+                canvas.drawText(
+                        hintLabel, 0, hintLabel.length(), hintX, hintBaseline + adjustmentY, paint);
             }
-            final float adjustmentY = params.mHintLabelVerticalAdjustment * labelCharHeight;
-            canvas.drawText(
-                    hintLabel, 0, hintLabel.length(), hintX, hintBaseline + adjustmentY, paint);
         }
 
         // Draw key icon.
