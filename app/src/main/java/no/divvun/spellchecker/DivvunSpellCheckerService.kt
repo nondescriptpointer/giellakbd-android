@@ -22,39 +22,31 @@ class DivvunSpellCheckerService : SpellCheckerService() {
 
     class DivvunSpellCheckerSession(private val context: Context) : Session() {
 
-        private lateinit var spellerArchiveWatcher: SpellerArchiveWatcher
+        /*private lateinit var spellerArchiveWatcher: SpellerArchiveWatcher
         private val speller
-            get() = spellerArchiveWatcher.archive?.speller()
+            get() = spellerArchiveWatcher.archive?.speller()*/
 
         override fun onCreate() {
             Timber.d("onCreate, locale: ${locale.toLocale()}")
-            spellerArchiveWatcher = SpellerArchiveWatcher(context, locale.toLocale())
+            //spellerArchiveWatcher = SpellerArchiveWatcher(context, locale.toLocale())
         }
 
         override fun onGetSuggestions(textInfo: TextInfo?, suggestionsLimit: Int): SuggestionsInfo {
-            val speller = this.speller
-                    ?: return SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, arrayOfNulls(0))
-
             Timber.d("onGetSuggestions()")
-
+            
             // Get the word
-            val word = textInfo!!.text.trim()
-            Timber.d("word: $word")
-
-            if (word == "") {
-                return SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, arrayOfNulls(0))
+            val word = textInfo?.text?.trim() ?: ""
+            Timber.d("word: '$word'")
+            
+            // Return test suggestions based on whether word is empty or not
+            val suggestions = if (word.isEmpty()) {
+                arrayOf("test1", "test2")
+            } else {
+                arrayOf("complete1", "complete2")
             }
-
-            // Check if the word is spelled correctly.
-            if (speller.isCorrect(word)) {
-                Timber.d("$word isCorrect")
-                return SuggestionsInfo(SuggestionsInfo.RESULT_ATTR_IN_THE_DICTIONARY, arrayOfNulls(0))
-            }
-            // If the word isn't correct, query for suggestions
-            val suggestions = speller.suggest(word)
-
+            
             val attrs = SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_TYPO
-            return SuggestionsInfo(attrs, suggestions.toTypedArray())
+            return SuggestionsInfo(attrs, suggestions)
         }
 
         override fun onGetSentenceSuggestionsMultiple(textInfos: Array<out TextInfo>?, suggestionsLimit: Int): Array<SentenceSuggestionsInfo> {

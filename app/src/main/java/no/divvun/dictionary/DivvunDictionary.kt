@@ -72,33 +72,23 @@ class DivvunDictionary(private val context: Context?, private val locale: Locale
             inOutWeightOfLangModelVsSpatialModel: FloatArray
     ): ArrayList<SuggestedWordInfo> {
 
-        Timber.d("getSuggestions")
-        val speller = this.speller ?: return ArrayList()
+        Timber.d("getSuggestions - TEST MODE")
         val word = composedData.mTypedWord.trim()
+        Timber.d("word: '$word'")
 
-        if (word == "") {
-            Timber.wtf("Word was invalid!")
-            return ArrayList()
+        // Return test suggestions based on whether word is empty or not
+        val testSuggestions = if (word.isEmpty()) {
+            listOf("test1", "test2")
+        } else {
+            listOf("complete1", "complete2")
         }
-        Timber.d("Got speller")
 
-        val suggestions = mutableListOf(composedData.mTypedWord)
-        val config = SpellerConfig(nBest = N_BEST_SUGGESTION_SIZE, maxWeight = MAX_WEIGHT)
-        val spellerSuggestions = speller.speller().suggest(word, config)
-        suggestions.addAll(spellerSuggestions)
+        Timber.d("Returning test suggestions: $testSuggestions")
 
-        Timber.d("$suggestions")
-
-        val result = suggestions.mapIndexed { index, suggestion ->
-            if (index == 0) {
-                SuggestedWordInfo(suggestion, ngramContext.extractPrevWordsContext(),
-                        suggestions.size - index, SuggestedWordInfo.KIND_CORRECTION, this,
-                        SuggestedWordInfo.NOT_AN_INDEX, SuggestedWordInfo.NOT_A_CONFIDENCE)
-            } else {
-                SuggestedWordInfo(suggestion, ngramContext.extractPrevWordsContext(),
-                        SuggestedWordInfo.MAX_SCORE, SuggestedWordInfo.KIND_TYPED, this,
-                        SuggestedWordInfo.NOT_AN_INDEX, SuggestedWordInfo.NOT_A_CONFIDENCE)
-            }
+        val result = testSuggestions.mapIndexed { index, suggestion ->
+            SuggestedWordInfo(suggestion, ngramContext.extractPrevWordsContext(),
+                    SuggestedWordInfo.MAX_SCORE, SuggestedWordInfo.KIND_TYPED, this,
+                    SuggestedWordInfo.NOT_AN_INDEX, SuggestedWordInfo.NOT_A_CONFIDENCE)
         }
 
         return ArrayList(result)
