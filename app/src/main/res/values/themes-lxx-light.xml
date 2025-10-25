@@ -108,7 +108,7 @@
     >
         <item name="keyboardTopPadding">0%p</item>
         <item name="keyboardBottomPadding">0%p</item>
-        <item name="horizontalGap">0%p</item>
+        <item name="horizontalGap">@fraction/config_key_horizontal_gap_lxx</item>
         <item name="touchPositionCorrectionData">@null</item>
     </style>
     <style
