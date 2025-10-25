@@ -57,7 +57,9 @@ public final class MoreKeySpec {
             throw new KeySpecParser.KeySpecParserError("Empty more key spec");
         }
         final String label = KeySpecParser.getLabel(moreKeySpec);
-        mLabel = needsToUpperCase ? StringUtils.toTitleCaseOfKeyLabel(label, locale) : label;
+        final String processedLabel = needsToUpperCase ? StringUtils.toTitleCaseOfKeyLabel(label, locale) : label;
+        mLabel = transformLabelForCombiningMarks(processedLabel);
+        
         final int codeInSpec = KeySpecParser.getCode(moreKeySpec);
         final int code = needsToUpperCase ? StringUtils.toTitleCaseOfKeyCode(codeInSpec, locale)
                 : codeInSpec;
@@ -73,6 +75,52 @@ public final class MoreKeySpec {
                     ? StringUtils.toTitleCaseOfKeyLabel(outputText, locale) : outputText;
         }
         mIconId = KeySpecParser.getIconId(moreKeySpec);
+    }
+
+    /**
+     * Transforms a label to include a dotted circle (◌) if it's a combining mark.
+     * This helps users visualize combining marks that would otherwise be invisible.
+     * 
+     * @param label the original label
+     * @return the transformed label with dotted circle if it's a combining mark
+     */
+    @Nonnull
+    private static String transformLabelForCombiningMarks(@Nonnull final String label) {
+        if (label == null || label.isEmpty()) {
+            return label;
+        }
+        
+        // Check if the label is a single combining mark
+        if (StringUtils.codePointCount(label) == 1) {
+            final int codePoint = label.codePointAt(0);
+            if (isCombiningMark(codePoint)) {
+                return "◌" + label;
+            }
+        }
+        
+        return label;
+    }
+    
+    /**
+     * Checks if a Unicode code point is one of the Arabic combining marks.
+     * These are the same combining marks as defined in the Swift code:
+     * ["ٓ","ٰ","ٌ","ْ","ٍ","ِ","ُ","ً","ّ","َ"]
+     * 
+     * @param codePoint the Unicode code point to check
+     * @return true if the code point is a combining mark
+     */
+    private static boolean isCombiningMark(final int codePoint) {
+        // Arabic combining marks: ًٌٍَُِّْٰٓ
+        return codePoint == 0x0653 || // ARABIC MADDAH ABOVE (ٓ)
+               codePoint == 0x0670 || // ARABIC LETTER SUPERSCRIPT ALEF (ٰ)
+               codePoint == 0x064C || // ARABIC DAMMATAN (ٌ)
+               codePoint == 0x0652 || // ARABIC SUKUN (ْ)
+               codePoint == 0x064D || // ARABIC KASRATAN (ٍ)
+               codePoint == 0x0650 || // ARABIC KASRA (ِ)
+               codePoint == 0x064F || // ARABIC DAMMA (ُ)
+               codePoint == 0x064B || // ARABIC FATHATAN (ً)
+               codePoint == 0x0651 || // ARABIC SHADDA (ّ)
+               codePoint == 0x064E;   // ARABIC FATHA (َ)
     }
 
     @Nonnull
