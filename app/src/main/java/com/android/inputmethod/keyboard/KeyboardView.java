@@ -447,13 +447,13 @@ public class KeyboardView extends View {
         final String hintLabel = key.getHintLabel();
         if (hintLabel != null) {
             // Check if this is a more keys indicator (hint letter in top-right corner)
-            if (key.hasHintLetter() && !key.hasHintLabel() && !key.hasShiftedLetterHint()) {
+            if (true) {
                 // Draw SVG circle indicator instead of text for more keys
                 final Drawable indicatorDrawable = getContext().getDrawable(R.drawable.more_keys_indicator);
                 if (indicatorDrawable != null) {
-                    final int indicatorSize = (int) (key.selectHintTextSize(params) * 0.8f); // Scale relative to hint text size
-                    final int indicatorX = (int) (keyWidth - mKeyHintLetterPadding - indicatorSize / 2.0f);
-                    final int indicatorY = (int) (mKeyHintLetterPadding);
+                    final int indicatorSize = (int) 32;
+                    final int indicatorX = (int) (keyWidth - (mKeyHintLetterPadding + 18) - indicatorSize / 2.0f);
+                    final int indicatorY = (int) (mKeyHintLetterPadding + 8);
                     
                     indicatorDrawable.setBounds(indicatorX, indicatorY, indicatorX + indicatorSize, indicatorY + indicatorSize);
                     indicatorDrawable.setAlpha((int) (params.mAnimAlpha * 255));
