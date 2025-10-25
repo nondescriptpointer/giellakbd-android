@@ -26,15 +26,22 @@
     <Row
         latin:keyWidth="10%p"
     >
+        <Spacer
+            latin:keyWidth="5%p" />
         <include
             latin:keyboardLayout="@xml/rowkeys_qwerty1" />
+        <Spacer
+            latin:keyWidth="5%p" />
     </Row>
     <Row
         latin:keyWidth="10%p"
     >
+        <Spacer
+            latin:keyWidth="5.5%p" />
         <include
-            latin:keyboardLayout="@xml/rowkeys_qwerty2"
-            latin:keyXPos="5%p" />
+            latin:keyboardLayout="@xml/rowkeys_qwerty2" />
+        <Spacer
+            latin:keyWidth="5.5%p" />
     </Row>
     <Row
         latin:keyWidth="10%p"

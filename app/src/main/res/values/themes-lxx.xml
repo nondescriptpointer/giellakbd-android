@@ -41,5 +41,7 @@
         <item name="spacebarIconWidthRatio">0.9</item>
         <!-- No popup hint letter -->
         <item name="keyPopupHintLetter"></item>
+        <!-- Increased horizontal gap for rounded buttons -->
+        <item name="horizontalGap">@fraction/config_key_horizontal_gap_lxx</item>
     </style>
 </resources>
